@@ -28,6 +28,7 @@ This is especially useful for people who want to try one-handed English input wi
   - Left: `z + x + c + v`
   - Right: `m + , + . + /`
 - NAV, mouse, media, bracket, and custom symbol layers
+- Mouse lock uses Karabiner's built-in mouse keys, with 3x movement after a short hold
 - `Esc` clears ARTSEY lock state
 
 ## Keyboard
@@ -86,6 +87,8 @@ output:    a  r  t  s
 - Enable only the side you want to use, or enable both.
 - `2 fingers = ARTSEY`
 - `3 fingers = NAV`
+- Mouse lock movement starts at the normal Karabiner mouse-key speed.
+- Holding a mouse direction for 350 ms switches that direction to 3x speed.
 - `Esc` clears ARTSEY lock state.
 
 ## Notes
