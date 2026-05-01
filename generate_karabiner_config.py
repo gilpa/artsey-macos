@@ -273,9 +273,14 @@ class ArtseyLeftKarabinerGenerator:
         }
 
     def nav_layer_taps(self) -> Dict[str, str]:
+        tap_canonicals = (
+            self.NAV_LOCK_TAP_CANONICALS
+            if self.is_three_finger_nav_activation()
+            else self.NAV_LAYER_TAP_CANONICALS
+        )
         return {
             self.physical_for_canonical(canonical_key): output_key
-            for canonical_key, output_key in self.NAV_LAYER_TAP_CANONICALS.items()
+            for canonical_key, output_key in tap_canonicals.items()
         }
 
     def nav_lock_taps(self) -> Dict[str, str]:
@@ -338,6 +343,14 @@ class ArtseyLeftKarabinerGenerator:
                 "value": 3,
             }
         ]
+
+    def is_three_finger_nav_activation(self) -> bool:
+        return any(
+            condition.get("type") == "variable_if"
+            and condition.get("name") == self.FINGER_TOTAL_VAR
+            and condition.get("value") == 3
+            for condition in self.activation_conditions
+        )
 
     def manual_activation_conditions(self) -> List[Dict[str, Any]]:
         return [
@@ -484,12 +497,7 @@ class ArtseyLeftKarabinerGenerator:
         ]
 
     def nav_layer_activation_conditions(self) -> List[Dict[str, Any]]:
-        if any(
-            condition.get("type") == "variable_if"
-            and condition.get("name") == self.FINGER_TOTAL_VAR
-            and condition.get("value") == 3
-            for condition in self.activation_conditions
-        ):
+        if self.is_three_finger_nav_activation():
             return self.activation_only_conditions()
         return self.activation_only_conditions() + [
             {
