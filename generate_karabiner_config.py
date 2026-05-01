@@ -164,6 +164,8 @@ class ArtseyLeftKarabinerGenerator:
 
     LOCK_NAV_COMBO = ["r", "i", "e"]
     LOCK_MOUSE_COMBO = ["t", "a", "y"]
+    MOUSE_LOCK_ACCEL_THRESHOLD_MS = 350
+    MOUSE_LOCK_ACCEL_MULTIPLIER = 3.0
     NAV_LAYER_TAP_CANONICALS = {
         "s": "page_up",
         "t": "home",
@@ -1188,7 +1190,7 @@ class ArtseyLeftKarabinerGenerator:
         physical_key: str,
         to_action: Dict[str, Any],
     ) -> Dict[str, Any]:
-        return {
+        manipulator = {
             "type": "basic",
             "from": {
                 "key_code": physical_key,
@@ -1197,6 +1199,20 @@ class ArtseyLeftKarabinerGenerator:
             "conditions": self.mouse_lock_conditions(),
             "to": [to_action],
         }
+        mouse_key = to_action.get("mouse_key", {})
+        if "x" in mouse_key or "y" in mouse_key:
+            accelerated_mouse_key = {
+                axis: int(value * self.MOUSE_LOCK_ACCEL_MULTIPLIER)
+                for axis, value in mouse_key.items()
+                if axis in ("x", "y")
+            }
+            manipulator["parameters"] = {
+                "basic.to_if_held_down_threshold_milliseconds": self.MOUSE_LOCK_ACCEL_THRESHOLD_MS,
+            }
+            manipulator["to_if_held_down"] = [
+                {"mouse_key": accelerated_mouse_key},
+            ]
+        return manipulator
 
     def create_key_up_simultaneous_manipulator(
         self,
