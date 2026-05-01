@@ -1653,7 +1653,12 @@ class ArtseyLeftKarabinerGenerator:
         )
 
     def build_lock_layer_rule(self) -> Dict[str, Any]:
+        down_key = self.physical_for_canonical("y")
         manipulators: List[Dict[str, Any]] = [
+            self.create_mouse_lock_tap_manipulator(
+                down_key,
+                self.mouse_lock_taps()[down_key],
+            ),
             self.create_state_combo_manipulator(
                 self.translate_combo(self.LOCK_NAV_COMBO),
                 [
@@ -1792,9 +1797,11 @@ class ArtseyLeftKarabinerGenerator:
 
     def build_mouse_lock_output_rule(self) -> Dict[str, Any]:
         manipulators: List[Dict[str, Any]] = []
+        down_key = self.physical_for_canonical("y")
         manipulators.extend(
             self.create_mouse_lock_tap_manipulator(physical_key, output_action)
             for physical_key, output_action in self.mouse_lock_taps().items()
+            if physical_key != down_key
         )
         return self.build_rule("ARTSEY - Mouse lock outputs", manipulators)
 
