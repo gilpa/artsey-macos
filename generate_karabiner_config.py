@@ -171,6 +171,7 @@ class ArtseyLeftKarabinerGenerator:
         "t": "home",
         "r": "up_arrow",
         "a": "end",
+        "o": "page_down",
         "i": "left_arrow",
         "y": "down_arrow",
         "e": "right_arrow",
@@ -900,48 +901,6 @@ class ArtseyLeftKarabinerGenerator:
                 {
                     "set_variable": {
                         "name": self.NUMBER_LAYER_SHIFTED_VAR,
-                        "value": 0,
-                    }
-                },
-            ],
-        }
-        if extra_conditions is None:
-            return self.with_artsey_enabled_condition(manipulator)
-        manipulator["conditions"] = extra_conditions
-        return manipulator
-
-    def create_nav_layer_hold_manipulator(
-        self,
-        extra_conditions: List[Dict[str, Any]] | None = None,
-        shifted_tap: bool = False,
-        clear_shift_once: bool = False,
-    ) -> Dict[str, Any]:
-        hold_key = self.physical_for_canonical("o")
-        manipulator = {
-            "type": "basic",
-            "parameters": {
-                "basic.to_if_alone_timeout_milliseconds": 250,
-                "basic.to_if_held_down_threshold_milliseconds": self.HOLD_LAYER_THRESHOLD_MS,
-            },
-            "from": {
-                "key_code": hold_key,
-                "modifiers": {"optional": ["any"]},
-            },
-            "to_if_held_down": [
-                {
-                    "set_variable": {
-                        "name": self.NAV_LAYER_VAR,
-                        "value": 1,
-                    }
-                },
-            ],
-            "to_if_alone": [
-                *self.create_output_actions("o", shifted_tap, clear_shift_once),
-            ],
-            "to_after_key_up": [
-                {
-                    "set_variable": {
-                        "name": self.NAV_LAYER_VAR,
                         "value": 0,
                     }
                 },
@@ -2318,6 +2277,7 @@ class ArtseyRightKarabinerGenerator(ArtseyLeftKarabinerGenerator):
         "t": "end",
         "r": "up_arrow",
         "a": "home",
+        "o": "page_down",
         "i": "right_arrow",
         "y": "down_arrow",
         "e": "left_arrow",
