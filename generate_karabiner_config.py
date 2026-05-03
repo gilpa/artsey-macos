@@ -824,7 +824,10 @@ class ArtseyLeftKarabinerGenerator:
         manipulator["conditions"] = extra_conditions
         return manipulator
 
-    def create_physical_escape_clear_manipulators(self) -> List[Dict[str, Any]]:
+    def create_physical_escape_clear_manipulators(
+        self,
+        include_modifier_lock_conditions: bool = True,
+    ) -> List[Dict[str, Any]]:
         clear_action = [{"key_code": "escape"}, *self.clear_all_modifier_lock_actions()]
         manipulators = [
             {
@@ -837,6 +840,8 @@ class ArtseyLeftKarabinerGenerator:
                 "conditions": self.activation_only_conditions(),
             }
         ]
+        if not include_modifier_lock_conditions:
+            return manipulators
         manipulators.extend(
             {
                 "type": "basic",
@@ -1478,11 +1483,16 @@ class ArtseyLeftKarabinerGenerator:
             )
         return self.build_rule(description, manipulators)
 
-    def build_shift_modifier_rule(self) -> Dict[str, Any]:
+    def build_shift_modifier_rule(
+        self,
+        include_modifier_lock_escape_clear: bool = True,
+    ) -> Dict[str, Any]:
         return self.build_rule(
             "ARTSEY - Shift modifiers",
             [
-                *self.create_physical_escape_clear_manipulators(),
+                *self.create_physical_escape_clear_manipulators(
+                    include_modifier_lock_escape_clear
+                ),
                 self.create_state_combo_manipulator(
                     self.translate_combo(self.SHIFT_LOCK_CANONICAL),
                     [
@@ -2062,9 +2072,12 @@ class ArtseyLeftKarabinerGenerator:
             ],
         )
 
-    def generate_control_rules(self) -> List[Dict[str, Any]]:
+    def generate_control_rules(
+        self,
+        include_modifier_lock_escape_clear: bool = True,
+    ) -> List[Dict[str, Any]]:
         rules = [
-            self.build_shift_modifier_rule(),
+            self.build_shift_modifier_rule(include_modifier_lock_escape_clear),
             self.build_lock_layer_rule(),
             self.build_nav_mode_special_rule(),
         ]
@@ -2179,7 +2192,9 @@ class ArtseyLeftKarabinerGenerator:
             if label == "Three Fingers Nav":
                 variant_rules = base_generator.generate_three_finger_nav_rules()
             else:
-                variant_rules = base_generator.generate_control_rules()
+                variant_rules = base_generator.generate_control_rules(
+                    include_modifier_lock_escape_clear=(label == "Manual")
+                )
                 output_generator = self.__class__(activation_conditions)
                 variant_rules.extend(output_generator.generate_output_rules())
             all_rules.append(
